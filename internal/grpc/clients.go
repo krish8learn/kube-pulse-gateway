@@ -3,15 +3,22 @@ package grpc
 import (
 	"fmt"
 
+	clusterpb "github.com/krish/kube-pulse-gateway/gen/cluster/v1"
 	healthpb "github.com/krish/kube-pulse-gateway/gen/health/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Clients struct {
+
+	// health API clients for the gRPC services
 	Collector healthpb.HealthServiceClient
 	Analyzer  healthpb.HealthServiceClient
 
+	// cluster API client for the gRPC service
+	ClusterCollector clusterpb.ClusterServiceClient
+
+	// gRPC connections for cleanup
 	collectorConn *grpc.ClientConn
 	analyzerConn  *grpc.ClientConn
 }
@@ -29,10 +36,11 @@ func NewClients(collectorAddr, analyzerAddr string) (*Clients, error) {
 	}
 
 	return &Clients{
-		Collector:     healthpb.NewHealthServiceClient(collectorConn),
-		Analyzer:      healthpb.NewHealthServiceClient(analyzerConn),
-		collectorConn: collectorConn,
-		analyzerConn:  analyzerConn,
+		Collector:        healthpb.NewHealthServiceClient(collectorConn),
+		Analyzer:         healthpb.NewHealthServiceClient(analyzerConn),
+		ClusterCollector: clusterpb.NewClusterServiceClient(collectorConn),
+		collectorConn:    collectorConn,
+		analyzerConn:     analyzerConn,
 	}, nil
 }
 

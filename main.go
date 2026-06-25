@@ -37,6 +37,10 @@ func main() {
 	mux.HandleFunc("GET /health/collector", handler.CollectorHealth(clients.Collector))
 	mux.HandleFunc("GET /health/analyzer", handler.AnalyzerHealth(clients.Analyzer))
 
+	mux.HandleFunc("GET /cluster/summary", handler.ClusterSummary(clients.ClusterCollector))
+	mux.HandleFunc("GET /cluster/nodes", handler.ListNodes(clients.ClusterCollector))
+	mux.HandleFunc("GET /cluster/nodes/{nodeName}", handler.GetNode(clients.ClusterCollector))
+
 	addr := fmt.Sprintf(":%s", port)
 	log.Info().Str("addr", addr).Msg("listening")
 	if err := http.ListenAndServe(addr, mux); err != nil {
